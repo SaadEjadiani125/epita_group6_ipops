@@ -1,6 +1,6 @@
 [project]
-name = "engtoolslab2"
-version = "0.1.0"
+name = "epita_saadejadiani_ipops"
+version = "0.1.1"
 description = "Add your description here"
 readme = "README.md"
 authors = [
@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [project.scripts]
-engtoolslab2 = "engtoolslab2:main"
+epita-group6-cli = "engtoolslab2.cli:main"
 
 [build-system]
 requires = ["uv_build>=0.13.6,<0.14.0"]
@@ -24,3 +24,6 @@ build-backend = "uv_build"
 dev = [
     "pytest>=9.2.0",
 ]
+
+[tool.uv.build-backend]
+module-name = "engtoolslab2"

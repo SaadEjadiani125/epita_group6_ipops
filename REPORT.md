@@ -43,25 +43,35 @@ On branch main
 
 Your branch is up to date with 'origin/main'.
 
+Changes to be committed:
+
+   (use "git restore --staged <file>..." to unstage)
+
+	 new file:   .env.template
+
 Changes not staged for commit:
 
+  (use "git add <file>..." to update what will be committed)
+
+  (use "git restore <file>..." to discard changes in working directory)
+
 	modified:   .gitignore
+
 	modified:   REPORT.md
+
 	modified:   pyproject.toml
+
 	modified:   uv.lock
 
 Untracked files:
 
-	.env.template
+  (use "git add <file>..." to include in what will be committed)
+
 	scripts/test_api.py
+
 	src/engtoolslab2/client.py
+
 	src/engtoolslab2/config.py
-
-no changes added to commit
-
-
-To be completed with the output of `git status`.
-
 ### 2. Live API Response (Redacted)
 
 ```json
@@ -80,6 +90,7 @@ To be completed with the output of `git status`.
 **Why is storing secrets in environment variables superior to putting them in configuration files like `config.json` or `settings.yaml`?**
 
 1. Environment variables keep sensitive credentials separate from source code, reducing the risk of accidentally exposing API keys when sharing or pushing a project to GitHub.
+
 2. They allow different credentials to be used in development and production without modifying application code, making credential management and rotation easier.
 
 **Why are default fallbacks like `os.getenv("API_KEY", "default")` dangerous for production secrets?**
@@ -136,8 +147,116 @@ engtoolslab2 v0.1.0
 
 3. **What is the fundamental difference between `pyproject.toml` (declaration) and `uv.lock` (pinning)?**  
 
-          -pyproject.toml declares the project's dependencies and their allowed version ranges.uv.lock records the exact versions selected for the project, including transitive dependencies and package hashes. This makes installations more consistent and reproducible.
+   -pyproject.toml declares the project's dependencies and their allowed version ranges.uv.lock records the exact versions selected for the project, including transitive dependencies and package hashes. This makes installations more consistent and reproducible.
 
 4. **How do the SHA-256 cryptographic hashes in `uv.lock` protect against supply chain attacks?**  
 
  The `uv.lock` file contains SHA-256 hashes for package files, including their source distributions and wheels. These hashes allow `uv` to verify the integrity of downloaded packages. When a package is downloaded, its hash can be compared with the expected hash in the lockfile. If they do not match, this can indicate that the file has been corrupted or modified. This helps protect against certain supply-chain attacks by detecting unexpected changes to package files. 
+
+
+
+
+## Part 4: Package Build & TestPyPI Deployment
+
+### 1. TestPyPI Deployment Details
+
+- **TestPyPI Package Name:** `epita_saadejadiani_ipops`
+- **Public URL:** https://test.pypi.org/project/epita-saadejadiani-ipops/
+
+- **CLI installation and execution output:**
+
+The package was installed and executed from the `/tmp` directory, outside the original project directory.
+
+Command used:
+
+```bash
+uv run --with epita-saadejadiani-ipops --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ epita-saadejadiani-cli
+```
+
+Execution output:
+
+Installed 11 packages
+
+EPITA Engineering Tools — Session 2
+
+Live System Telemetry: LIVE_SUCCESS
+
+Property       Value
+status         LIVE_SUCCESS
+ip             [Public IP address]
+city           Paris
+region         Île-de-France
+country        FR
+org            AS5410 Bouygues Telecom SA
+
+
+The installation and execution were successful. The CLI retrieved live geolocation information from the IPinfo API and displayed it using a Rich dashboard.
+
+### 2. Packaging Theory
+
+**What is the difference between an `sdist` (.tar.gz) and a Wheel (.whl)?**
+
+
+An `sdist` (source distribution) is an archive containing the package's source code and the files needed to build it. When installing an sdist, the package generally needs to be built on the user's machine.
+
+A Wheel is a pre-built distribution containing the package in an installable format. It allows package managers to install the files directly without building the package from source.
+
+** Why are Wheels significantly faster and safer to install on client machines?**
+
+
+Wheels are generally faster because they are already built, so the installation process does not need to compile or build the package from source.
+
+They are also generally safer because installation does not require running the package's build process on the client's machine. This reduces the need to execute build scripts or build-backend code during installation. However, a Wheel is not automatically safe; its contents and publisher must still be trusted.
+
+
+
+## Part 5: Professional Debugging Challenge (No `print()`!)
+
+### 1. Root Cause Analysis
+
+Using the VS Code Debug Console, I inspected the runtime types:
+
+- `record["volume"]`: `<class 'str'>`
+- `record["weight"]`: `<class 'str'>`
+
+The `split(",")` method returns strings. Therefore, multiplying `volume` by `weight` caused a `TypeError` because Python cannot multiply two strings.
+
+### 2. Conditional Breakpoint
+
+I set a conditional breakpoint on the following line:
+
+
+impact = compute_weighted_metric(record["volume"], record["weight"])
+
+Condition: `idx == 2`
+
+This makes the debugger stop when processing the third record.
+
+### 3. Step Into and Call Stack
+
+I used Step Into (F11) to enter `compute_weighted_metric()`.
+
+The Call Stack showed:
+
+1. `compute_weighted_metric`
+2. `aggregate_telemetry`
+3. `<module>`
+
+### 4. The Fix
+
+I converted `volume` and `weight` to floating-point numbers inside `parse_api_record()`:
+
+
+"volume": float(parts[2]),
+"weight": float(parts[4])
+
+
+### 5. Verified Execution Output
+
+Command:
+
+uv run python scripts/debug_challenge.py
+
+Output:
+
+Aggregate Result: {'successful_entries': 3, 'total_volume': 650.0, 'avg_volume': 216.66666666666666, 'high_impact_count': 1}
