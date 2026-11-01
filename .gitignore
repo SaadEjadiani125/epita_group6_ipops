@@ -2,3 +2,6 @@
 *.txt
 dist/
 __pycache__/
+.env
+.env.*
+!.env.template

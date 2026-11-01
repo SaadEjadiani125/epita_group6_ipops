@@ -7,7 +7,11 @@ authors = [
     { name = "Saad", email = "ejadianisaad@gmail.com" }
 ]
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "python-dotenv>=1.2.4",
+    "requests>=2.34.2",
+    "rich>=15.0.0",
+]
 
 [project.scripts]
 engtoolslab2 = "engtoolslab2:main"
@@ -15,3 +19,8 @@ engtoolslab2 = "engtoolslab2:main"
 [build-system]
 requires = ["uv_build>=0.13.6,<0.14.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+]
