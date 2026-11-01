@@ -4,7 +4,8 @@ Student Name: Saad Ejadiani
 EPITA Login: saad.ejadiani@epita.fr  
 Assigned API Group: Group 6 — Geolocation & IP Ops (IPinfo.io)  
 Date: 31/10/2026  
-TestPyPI Live Package URL:** To be completed after deployment.
+TestPyPI Live Package URL:
+https://test.pypi.org/project/epita-saadejadiani-ipops/
 
 ---
 
@@ -12,7 +13,7 @@ TestPyPI Live Package URL:** To be completed after deployment.
 
 - Group Command Output:
 - Assigned Domain: Group 6 — Geolocation & IP Ops (IPinfo.io)
-- Project Directory Name: EngToolsLab2 
+- Project Directory Name: epita_group6_ipops
 
 ---
 
@@ -102,7 +103,7 @@ A default fallback can hide missing configuration by silently using an invalid o
 ### 1. Dependency Tree (`uv tree`)
 
 
-engtoolslab2 v0.1.0
+epita-saadejadiani-ipops v0.1.1
 ├── python-dotenv v1.2.4
 ├── requests v2.34.2
 │   ├── certifi v2026.10.23
@@ -119,7 +120,7 @@ engtoolslab2 v0.1.0
     ├── pluggy v1.7.0
     └── pygments v2.21.0
 
-
+	
 - **Direct dependencies:** 
 
       python-dotenv, requests, and rich. pytest is a development-only dependency.
@@ -169,9 +170,7 @@ The package was installed and executed from the `/tmp` directory, outside the or
 
 Command used:
 
-```bash
-uv run --with epita-saadejadiani-ipops --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ epita-saadejadiani-cli
-```
+  uv run --with epita-saadejadiani-ipops==0.1.1 --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ epita-      group6-cli
 
 Execution output:
 
@@ -183,7 +182,7 @@ Live System Telemetry: LIVE_SUCCESS
 
 Property       Value
 status         LIVE_SUCCESS
-ip             [Public IP address]
+ip             [REDACTED]
 city           Paris
 region         Île-de-France
 country        FR
